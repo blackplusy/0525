@@ -71,6 +71,77 @@ ubuntu中管理员一般是不允许登录的，允许su(切换用户)
 								   /etc/exports
 		sudo mount 192.168.7.247:/home/heygor /mnt
 		通过/mnt目录来访问网络磁盘192.168.7.247:/home/heygor中的内容
+7>dns服务器搭建
+	a.访问网站的过程
+	浏览器---www.sina.com.cn--网络---电信DNS服务器[域名--IP]--sina服务器
+	FQDN：完全合格域名
+	主机头.域(组织、范围)
+	baidu.com   baidu是主机头 .com是域
+	. .com baidu.com yun.baidu.com
+	b.DNS服务器解析类型
+	1>正向解析(域名--IP)
+	2>反向解析(IP--域名)
+	1)dns服务器软件安装
+		sudo apt-get install bind9
+	2)配置域名解析文件
+		sudo vim /etc/bind/named.conf.local
+		zone "heygor.com" {
+			type master;            //主机类型 master代表主机 slave代表从机
+			file "db.heygor.com";   //解析的数据文件的名字
+		};
+	3）编写heygor.com的解析文件
+		sudo cp /etc/bind/db.local  /var/cache/bind/db.heygor.com
+		拷贝模板文件到制定位置命名(必须和上面配置的file对应)
+	
+		$TTL    604800
+		@       IN      SOA     localhost. root.localhost. (
+				              2         ; Serial
+				         604800         ; Refresh
+				          86400         ; Retry
+				        2419200         ; Expire
+				         604800 )       ; Negative Cache TTL
+		;
+		@       IN      NS      localhost.
+		@       IN      A       127.0.0.1
+		@       IN      AAAA    ::1
+		@       IN      A       192.168.1.100   #域名需要解析为的IP
+	4)重启bind9服务
+		sudo /etc/init.d/bind9 restart
+	5)客户端的服务配置
+		sudo vim /etc/resolv.conf 
+		nameserver 192.168.7.247
+	6)测试
+		域名解析命令nslookup
+		nslookup heygor.com
+	7）DNS记录类型
+		A记录  用来制定主机名或者IP地址的记录	
+		NS记录 域名服务器的记录，用于指定域名是由哪个DNS服务器来解析	
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
