@@ -117,7 +117,50 @@ ubuntu中管理员一般是不允许登录的，允许su(切换用户)
 		A记录  用来制定主机名或者IP地址的记录	
 		NS记录 域名服务器的记录，用于指定域名是由哪个DNS服务器来解析	
 
+8>nginx基础(搭建负载均衡系统)
+	轻量级web服务器
+	反向代理
+	负载均衡
+	a.基础配置
+		server1   网站1  
+			192.168.7.62/ecshop1
+		server2   网站2
+			192.168.7.62:88
+		server3   nginx(负载均衡)
+			192.168.7.247
+			  DNS
+			   |	
+			server3
+			/     \
+		    server1   server2
+	b.nginx的安装
+		sudo apt-get install nginx
+	c.nginx的配置	
+		sudo vim /etc/nginx/sites-available/default 
+		weight 权重
+		upstream test {
+			server 192.168.7.62:88 weight=1;
+			server 192.168.7.62    weight=5;
+		}
+		server {
+			listen 80 default_server;
+			listen [::]:80 default_server;
+			root /var/www/html;
+			server_name _;
 
+			location / {
+				proxy_pass http://test;
+		
+				try_files $uri $uri/ =404;
+			}
+		}
+	d.重启nginx服务器
+		sudo service nginx restart
+	e.测试
+		浏览器中输入nginx服务器的IP
+
+
+	
 
 
 
